@@ -43,10 +43,8 @@ public class Player : MonoBehaviour
         //총알 발사
         Shoot();
         
-
-        
-        
     }
+    
     void Shoot(){
         if(Time.time - lastShotTime > shootInterval){
             Instantiate(weapon, shootTransform.position, Quaternion.identity);
@@ -54,4 +52,12 @@ public class Player : MonoBehaviour
         }
         
     }
+    
+    private void OnTriggerEnter2D(Collider2D other) {
+        if(other.gameObject.tag == "Enemy"){
+            Debug.Log("Game over");
+            Destroy(gameObject);
+        }
+    }
+    
 }
