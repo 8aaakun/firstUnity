@@ -9,7 +9,8 @@ public class Player : MonoBehaviour
     private float moveSpeed;
 
     [SerializeField]
-    private GameObject weapon;
+    private GameObject[] weapons;
+    private int weaponIdx = 0;
 
     [SerializeField]
     private Transform shootTransform;
@@ -41,22 +42,35 @@ public class Player : MonoBehaviour
         transform.position = new Vector3(toX, transform.position.y, transform.position.z);
 
         //총알 발사
-        Shoot();
+        if(GameManager.instance.isGameOver == false){
+            Shoot();
+        }
         
     }
     
     void Shoot(){
         if(Time.time - lastShotTime > shootInterval){
-            Instantiate(weapon, shootTransform.position, Quaternion.identity);
+            Instantiate(weapons[weaponIdx], shootTransform.position, Quaternion.identity);
             lastShotTime = Time.time;
         }
         
     }
     
     private void OnTriggerEnter2D(Collider2D other) {
-        if(other.gameObject.tag == "Enemy"){
-            Debug.Log("Game over");
+        if(other.gameObject.tag == "Enemy" || other.gameObject.tag == "Boss"){
+            GameManager.instance.SetGameOver();
             Destroy(gameObject);
+        } 
+        else if(other.gameObject.tag == "Coin"){
+            GameManager.instance.IncreaseCoin();
+            Destroy(other.gameObject);
+        }
+    }
+    
+    public void Upgrade(){
+        weaponIdx++;
+        if(weaponIdx >= weapons.Length){
+            weaponIdx = weapons.Length - 1;
         }
     }
     
